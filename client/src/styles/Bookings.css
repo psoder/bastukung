@@ -1,0 +1,19 @@
+.booking {
+    padding: 0.5rem;
+}
+
+.booking-info {
+    display: grid;
+    grid-template-columns: repeat(200px, 5);
+}
+
+#booking-list {
+    display: flex;
+    flex-direction: column;
+}
+
+#bookings-container {
+    display: flex;
+    justify-self: center;
+    flex-direction: column;
+}
