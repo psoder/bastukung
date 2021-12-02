@@ -1,27 +1,32 @@
 import { DesktopDatePicker, LocalizationProvider } from "@mui/lab";
-import { Autocomplete, Button, Card, Stack, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { Autocomplete, Box, Button, Card, Stack, TextField, Typography } from "@mui/material";
+import React from "react";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import '../styles/NewBooking.css'
 
 export const NewBooking = () => {
     return (
-        <Card id="new-booking-conatainer" raised={true}>
-            <Typography variant="h4">
-                Ny Bokning
-            </Typography>
-            <Stack direction="row" spacing={2}>
-                <DatePicker />
-                <TimePicker />
-                <User />
-                <Comment />
-                <Button variant="outlined">Boka</Button>
-            </Stack>
-        </Card>
+        <Box>
+            <Card id="new-booking-conatainer" raised={true}>
+                <Typography variant="h4">
+                    Ny Bokning
+                </Typography>
+                <Stack direction="row" spacing={2} sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'auto auto 1fr auto'
+                }}>
+                    <DatePicker minWidth={0} />
+                    <TimePicker minWidth={200} />
+                    <Comment minWidth={200} />
+                    <Button onClick={createBooking}
+                        variant="outlined">Boka</Button>
+                </Stack>
+            </Card>
+        </Box>
     );
 }
 
-const DatePicker = () => {
+const DatePicker = (props: { minWidth: number }) => {
     const [value, setValue] = React.useState<Date | null>(
         new Date(),
     );
@@ -30,18 +35,20 @@ const DatePicker = () => {
     };
 
     return (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DesktopDatePicker
-                inputFormat="d/MMMM/y"
-                value={value}
-                onChange={handleChange}
-                renderInput={(params) => <TextField {...params} />}
-            />
-        </LocalizationProvider>
+        <Box sx={{ minWidth: props.minWidth }}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DesktopDatePicker
+                    inputFormat="d/MMMM/y"
+                    value={value}
+                    onChange={handleChange}
+                    renderInput={(params) => <TextField {...params} />}
+                />
+            </LocalizationProvider>
+        </Box>
     );
 }
 
-const TimePicker = () => {
+const TimePicker = (props: { minWidth: number }) => {
     const times = [
         "01:00 - 04:00",
         "04:00 - 07:00",
@@ -54,17 +61,19 @@ const TimePicker = () => {
     ];
 
     return (
-        <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            options={times}
-            renderInput={(params) => <TextField {...params}
-                label="Tid" />}
-        />
+        <Box sx={{ minWidth: props.minWidth }}>
+            <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={times}
+                renderInput={(params) => <TextField {...params}
+                    label="Tid" />}
+            />
+        </Box>
     );
 }
 
-const Comment = () => {
+const Comment = (props: { minWidth: number }) => {
     const [value, setValue] = React.useState('');
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,20 +82,18 @@ const Comment = () => {
     };
 
     return (
-        <TextField
-            id="outlined-textarea"
-            label="Kommentar"
-            multiline
-            onChange={handleChange}
-        />
+        <Box sx={{ minWidth: props.minWidth }}>
+            <TextField
+                id="outlined-textarea"
+                label="Kommentar"
+                multiline
+                fullWidth={true}
+                onChange={handleChange}
+            />
+        </Box>
     );
 }
 
-const User = () => {
+const createBooking = () => {
 
-    return (
-        <div id="user-info">
-            User name
-        </div>
-    );
-}
+}  
