@@ -7,8 +7,8 @@ import '../styles/NewBooking.css'
 export const NewBooking = () => {
     return (
         <Box>
-            <Card id="new-booking-conatainer" raised={true}>
-                <Typography variant="h4">
+            <Card id="new-booking-conatainer" raised={true} sx={{padding: '2rem'}}>
+                <Typography variant="h3" gutterBottom>
                     Ny Bokning
                 </Typography>
                 <Stack direction="row" spacing={2} sx={{

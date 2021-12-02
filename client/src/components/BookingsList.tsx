@@ -30,7 +30,7 @@ const compareBooking = (a: Booking, b: Booking) => {
 
 export const BookingList = () => {
     return (
-        <Card id='booking-list' raised={true} sx={{padding: '5%'}}>
+        <Card id='booking-list' raised={true} sx={{padding: '2rem'}}>
             <Typography variant="h3" gutterBottom>
                 Bokningar
             </Typography>
@@ -59,7 +59,8 @@ const Booking = (props: Booking) => {
                 direction='row'
                 sx={{
                     display: 'grid',
-                    gridTemplateColumns: '33% 25% 1fr'
+                    gridTemplateColumns: '33% 25% 1fr',
+                    padding: '0.5rem'
                 }}>
                 <Stack direction='row' spacing={4}>
                     <TimeDisplay date={props.date} />
