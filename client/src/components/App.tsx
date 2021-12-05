@@ -1,15 +1,20 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import '../styles/App.css';
-import { Bookings } from './Bookings';
+import { Bookings } from './booking/Bookings';
+import { Navbar } from './Navbar';
 
 function App() {
 	return (
-		<BrowserRouter>
-			<div className="App">
-				<Bookings />
-			</div>
-		</BrowserRouter>
+		<div className="App">
+			<Navbar />
+			<Routes>
+				<Route path="/boka" element={<Bookings />} />
+				<Route path="/konto" element={<Bookings />} />
+				<Route path="/familj" element={<Bookings />} />
+				<Route path="/kontakt" element={<Bookings />} />
+			</Routes>
+		</div>
 	);
 }
 
