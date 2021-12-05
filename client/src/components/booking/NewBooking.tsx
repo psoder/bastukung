@@ -2,7 +2,7 @@ import { DesktopDatePicker, LocalizationProvider } from "@mui/lab";
 import { Autocomplete, Box, Button, Card, Stack, TextField, Typography } from "@mui/material";
 import React from "react";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
-import '../styles/NewBooking.css'
+import 'styles/NewBooking.css'
 
 export const NewBooking = () => {
     return (
