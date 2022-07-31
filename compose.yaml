@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  web:
+    build:
+      context: ./src
+      dockerfile: next.Dockerfile
+    networks:
+      - local-dynamodb
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/src
+      - /src/node_modules
+      - /src/.next
+
+  dynamo:
+    container_name: local-dynamodb
+    image: amazon/dynamodb-local
+    networks:
+      - local-dynamodb
+    ports:
+      - "8000:8000"
+    volumes:
+      - dynamodata:/home/dynamodblocal
+    working_dir: /home/dynamodblocal
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
+
+networks:
+  local-dynamodb:
+    name: local-dynamodb
+
+volumes:
+  dynamodata: {}
