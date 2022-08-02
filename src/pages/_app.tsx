@@ -12,7 +12,20 @@ const colors = {
   },
 };
 
-const theme = extendTheme({ colors });
+const theme = extendTheme({
+  colors,
+  styles: {
+    global: {
+      body: {
+        bg: "blue.100",
+      },
+    },
+  },
+  fonts: {
+    heading: `'Open Sans', sans-serif`,
+    body: `'Raleway', sans-serif`,
+  },
+});
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
   return (

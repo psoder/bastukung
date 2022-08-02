@@ -4,7 +4,7 @@ import { Shadow } from "types/ChakraTypes";
 
 const Card = ({
   children,
-  padding = 5,
+  padding = 30,
   shadow = "base",
   borderRadius = 5,
   bgColor = "white",
@@ -17,6 +17,7 @@ const Card = ({
 }) => {
   return (
     <Box
+      flex={1}
       p={padding}
       shadow={shadow}
       borderRadius={borderRadius}
