@@ -12,7 +12,7 @@ import NextLink from "next/link";
 import { ReactNode, useState } from "react";
 
 const Header = () => {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [mobile] = useMediaQuery("(max-width: 600px)");
 
   const items = (
@@ -27,8 +27,9 @@ const Header = () => {
           <MenuItem text="Familj" href="/family" />
         </>
       )}
+      {session?.user.role === "ADMIN" && <MenuItem text="Admin" href="/admin" />}
       <MenuItem
-        text="Github"
+        text="GitHub"
         href="https://github.com/psoder/bastukung"
         external={true}
       />
