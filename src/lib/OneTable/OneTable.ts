@@ -3,21 +3,21 @@ import * as OneTable from "dynamodb-onetable/Dynamo";
 
 let Dynamo: OneTable.Dynamo;
 
-if (process.env.NODE_ENV === "production") {
-  Dynamo = new OneTable.Dynamo({
-    client: new DynamoDBClient({
-      region: process.env.AWS_REGION,
-    }),
-  });
-} else {
-  if (!global.dynamo) {
-    global.dynamo = new OneTable.Dynamo({
-      client: new DynamoDBClient({
-        region: process.env.AWS_REGION,
-      }),
-    });
-  }
-  Dynamo = global.dynamo;
-}
+// if (process.env.NODE_ENV === "production") {
+//   Dynamo = new OneTable.Dynamo({
+//     client: new DynamoDBClient({
+//       region: process.env.AWS_REGION,
+//     }),
+//   });
+// } else {
+//   if (!global.dynamoOT) {
+//     global.dynamoOT = new OneTable.Dynamo({
+//       client: new DynamoDBClient({
+//         region: process.env.AWS_REGION,
+//       }),
+//     });
+//   }
+//   Dynamo = global.dynamoOT;
+// }
 
-export default Dynamo;
+export { Dynamo };

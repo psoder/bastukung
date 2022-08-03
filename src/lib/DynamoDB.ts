@@ -1,6 +1,7 @@
 import { DynamoDBClient, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 
-let ddbClient: DynamoDBClient;
+let ddbClient: DynamoDBDocument;
 
 const config: DynamoDBClientConfig = {
   region: process.env.AWS_REGION,
@@ -10,17 +11,28 @@ const config: DynamoDBClientConfig = {
   },
 };
 
+const marshallOptions = {
+  convertEmptyValues: true,
+  removeUndefinedValues: true,
+  convertClassInstanceToMap: true,
+};
+
+// Create DynamoDBDocumentClient
 if (process.env.NODE_ENV === "production") {
-  ddbClient = new DynamoDBClient(config);
+  ddbClient = DynamoDBDocument.from(new DynamoDBClient(config), {
+    marshallOptions,
+  });
 } else {
   if (!global.ddbClient) {
-    global.ddbClient = new DynamoDBClient({
-      ...config,
-      endpoint: "http://local-dynamodb:8000",
-    });
+    global.ddbClient = DynamoDBDocument.from(
+      new DynamoDBClient({ ...config, endpoint: "http://local-dynamodb:8000" }),
+      {
+        marshallOptions,
+      }
+    );
   }
 
   ddbClient = global.ddbClient;
 }
 
-export default ddbClient;
+export { ddbClient };

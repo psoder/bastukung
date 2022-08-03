@@ -1,14 +1,36 @@
+import { DynamoDB, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 // import FacebookProvider from "next-auth/providers/facebook";
 // import GithubProvider from "next-auth/providers/github";
-// import TwitterProvider from "next-auth/providers/twitter";
-// import Auth0Provider from "next-auth/providers/auth0";
-// import AppleProvider from "next-auth/providers/apple"
 // import EmailProvider from "next-auth/providers/email"
 
-// For more information on each option (and a full list of options) go to
-// https://next-auth.js.org/configuration/options
+const adapterConfig = (): DynamoDBClientConfig => {
+  let config: DynamoDBClientConfig = {
+    region: process.env.AWS_REGION,
+    credentials: {
+      accessKeyId: process.env.DB_ACCESS_KEY!,
+      secretAccessKey: process.env.DB_ACCESS_SECRET!,
+    },
+  };
+
+  if (process.env.NODE_ENV !== "production") {
+    config = { ...config, endpoint: "http://local-dynamodb:8000" };
+  }
+
+  return config;
+};
+
+const client = DynamoDBDocument.from(new DynamoDB(adapterConfig()), {
+  marshallOptions: {
+    convertEmptyValues: true,
+    removeUndefinedValues: true,
+    convertClassInstanceToMap: true,
+  },
+});
+
 export const authOptions: NextAuthOptions = {
   // https://next-auth.js.org/configuration/providers/oauth
   providers: [
@@ -18,15 +40,6 @@ export const authOptions: NextAuthOptions = {
        }),
     // Temporarily removing the Apple provider from the demo site as the
     // callback URL for it needs updating due to Vercel changing domains
-    Providers.Apple({
-      clientId: process.env.APPLE_ID,
-      clientSecret: {
-        appleId: process.env.APPLE_ID,
-        teamId: process.env.APPLE_TEAM_ID,
-        privateKey: process.env.APPLE_PRIVATE_KEY,
-        keyId: process.env.APPLE_KEY_ID,
-      },
-    }),
     */
     // FacebookProvider({
     //   clientId: process.env.FACEBOOK_ID!,
@@ -40,20 +53,12 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_ID!,
       clientSecret: process.env.GOOGLE_SECRET!,
     }),
-    // TwitterProvider({
-    //   clientId: process.env.TWITTER_ID!,
-    //   clientSecret: process.env.TWITTER_SECRET!,
-    // }),
-    // Auth0Provider({
-    //   clientId: process.env.AUTH0_ID!,
-    //   clientSecret: process.env.AUTH0_SECRET!,
-    //   issuer: process.env.AUTH0_ISSUER,
-    // }),
   ],
   callbacks: {},
   session: {
     strategy: "jwt",
   },
+  adapter: DynamoDBAdapter(client, { tableName: "Users" }),
 };
 
 export default NextAuth(authOptions);
