@@ -3,6 +3,7 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBAdapter } from "@next-auth/dynamodb-adapter";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { Role } from "types";
 // import FacebookProvider from "next-auth/providers/facebook";
 // import GithubProvider from "next-auth/providers/github";
 // import EmailProvider from "next-auth/providers/email"
@@ -54,7 +55,25 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_SECRET!,
     }),
   ],
-  callbacks: {},
+  callbacks: {
+    jwt: async ({ user, token }) => {
+      if (user) {
+        token.familyId = user.familyId as string;
+        token.familyAdmin = (user.familyAdmin as boolean) ?? false;
+        token.role = (user.role as Role) ?? "USER";
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      if (session?.user) {
+        session.user.familyId = token.familyId as string;
+        session.user.familyAdmin = token.familyAdmin as boolean;
+        session.user.id = token.sub as string;
+        session.user.role = token.role as Role;
+      }
+      return session;
+    },
+  },
   session: {
     strategy: "jwt",
   },
