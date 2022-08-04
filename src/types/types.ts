@@ -23,8 +23,7 @@ export type User = {
 };
 
 export type Family = {
-  id: string; // Partition key
-  name: string;
-  members: string[];
-  admins: string[];
+  familyName: string;
+  familyMembers: string[];
+  familyAdmins: string[];
 };
