@@ -17,15 +17,7 @@ import ManageBookings from "./manage-bookings";
 import ManageFamilies from "./manage-families";
 import ManageUsers from "./manage-users";
 
-const Admin = ({
-  users,
-  families,
-  bookings,
-}: {
-  users: User[];
-  families: Family[];
-  bookings: Booking[];
-}) => {
+const Admin = () => {
   return (
     <Container maxW="8xl" display="flex" p="5%">
       <Tabs orientation="vertical" flex={1}>
@@ -69,19 +61,19 @@ const Admin = ({
               <TabPanels>
                 <TabPanel p="0">
                   <TP title="Användare">
-                    <ManageUsers users={users} />
+                    <ManageUsers />
                   </TP>
                 </TabPanel>
 
                 <TabPanel p="0">
                   <TP title="Familjer">
-                    <ManageFamilies families={families} />
+                    <ManageFamilies />
                   </TP>
                 </TabPanel>
 
                 <TabPanel p="0">
                   <TP title="Bokningar">
-                    <ManageBookings bookings={bookings} />
+                    <ManageBookings />
                   </TP>
                 </TabPanel>
               </TabPanels>

@@ -7,10 +7,14 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { AdminContext } from "pages/admin";
+import { useContext } from "react";
 import { Booking } from "types";
 import { format } from "utils/date";
 
-const ManageBookings = ({ bookings }: { bookings: Booking[] }) => {
+const ManageBookings = () => {
+  const { bookings } = useContext(AdminContext);
+
   return (
     <>
       <TableContainer>

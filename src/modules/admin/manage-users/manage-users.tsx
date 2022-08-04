@@ -7,9 +7,13 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { AdminContext } from "pages/admin";
+import { useContext } from "react";
 import { User } from "types";
 
-const ManageUsers = ({ users }: { users: User[] }) => {
+const ManageUsers = () => {
+  const { users } = useContext(AdminContext);
+
   return (
     <>
       <TableContainer>

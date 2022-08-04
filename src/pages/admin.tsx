@@ -11,6 +11,7 @@ import type {
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { createContext } from "react";
 import { Booking, Family, User } from "types";
 import { authOptions } from "./api/auth/[...nextauth]";
 
@@ -67,6 +68,12 @@ export const getServerSideProps: GetServerSideProps = async (
   };
 };
 
+export const AdminContext = createContext<{
+  users: User[];
+  families: Family[];
+  bookings: Booking[];
+}>({ users: [], families: [], bookings: [] });
+
 const Admin: NextPage = ({ users, families, bookings }: any) => {
   const { data: session } = useSession();
 
@@ -88,15 +95,15 @@ const Admin: NextPage = ({ users, families, bookings }: any) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Layout>
-        <Box flex={1} display="flex" bgColor="red.100">
-          <AdminPanel
-            users={users as User[]}
-            families={families as Family[]}
-            bookings={bookings as Booking[]}
-          />
-        </Box>
-      </Layout>
+      <AdminContext.Provider
+        value={{ users: users, families: families, bookings: bookings }}
+      >
+        <Layout>
+          <Box flex={1} display="flex" bgColor="red.100">
+            <AdminPanel />
+          </Box>
+        </Layout>
+      </AdminContext.Provider>
     </>
   );
 };

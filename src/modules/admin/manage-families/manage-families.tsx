@@ -14,10 +14,13 @@ import {
   Tr,
   useToast,
 } from "@chakra-ui/react";
-import { ChangeEvent, useState } from "react";
+import { AdminContext } from "pages/admin";
+import { ChangeEvent, useContext, useState } from "react";
 import { Family } from "types";
 
-const ManageFamilies = ({ families }: { families: Family[] }) => {
+const ManageFamilies = () => {
+  const { families } = useContext(AdminContext);
+
   return (
     <Flex flexDir="column" gap="10">
       <CreateFamily />
@@ -32,8 +35,8 @@ const ManageFamilies = ({ families }: { families: Family[] }) => {
             <Thead>
               <Tr>
                 <Th>Namn</Th>
-                <Th>Familjemedlemmar</Th>
                 <Th>Familjeadmins</Th>
+                <Th>Familjemedlemmar</Th>
               </Tr>
             </Thead>
 
@@ -50,11 +53,19 @@ const ManageFamilies = ({ families }: { families: Family[] }) => {
 };
 
 const FamilyRow = ({ family }: { family: Family }) => {
+  const addFamilyMember = () => {};
+
   return (
     <Tr>
       <Td>{family.familyName ?? "-"}</Td>
-      <Td>{family.familyMembers ?? "-"}</Td>
-      <Td>{family.familyAdmins ?? "-"}</Td>
+      <Td>{family.familyAdmins ?? <AddFamilyAdmin />}</Td>
+      <Td>
+        {family.familyMembers ?? (
+          <Button fontWeight="normal" onClick={() => addFamilyMember()}>
+            Lägg till familjemedlem
+          </Button>
+        )}
+      </Td>
     </Tr>
   );
 };
@@ -120,6 +131,52 @@ const CreateFamily = () => {
         <Button onClick={handleSubmit}>Skapa</Button>
       </Flex>
     </Flex>
+  );
+};
+
+const AddFamilyAdmin = () => {
+  const addFamilyAdmin = (familyName: string, userEmail: string) => {};
+
+  return (
+    <>
+      <Button
+        fontWeight="normal"
+        onClick={() => addFamilyAdmin(family.familyName, "")}
+      >
+        Lägg till familjeadmin
+      </Button>
+
+      {/* <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Create your account</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <FormLabel>First name</FormLabel>
+              <Input ref={initialRef} placeholder="First name" />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Last name</FormLabel>
+              <Input placeholder="Last name" />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3}>
+              Save
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal> */}
+    </>
   );
 };
 
