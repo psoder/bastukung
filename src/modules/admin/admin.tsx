@@ -1,5 +1,4 @@
 import {
-  Box,
   Container,
   Divider,
   Grid,
@@ -13,11 +12,20 @@ import {
 } from "@chakra-ui/react";
 import Card from "components/Card";
 import { ReactElement } from "react";
+import { Booking, Family, User } from "types";
 import ManageBookings from "./manage-bookings";
 import ManageFamilies from "./manage-families";
 import ManageUsers from "./manage-users";
 
-const Admin = () => {
+const Admin = ({
+  users,
+  families,
+  bookings,
+}: {
+  users: User[];
+  families: Family[];
+  bookings: Booking[];
+}) => {
   return (
     <Container maxW="8xl" display="flex" p="5%">
       <Tabs orientation="vertical" flex={1}>
@@ -61,19 +69,19 @@ const Admin = () => {
               <TabPanels>
                 <TabPanel p="0">
                   <TP title="Användare">
-                    <ManageUsers />
+                    <ManageUsers users={users} />
                   </TP>
                 </TabPanel>
 
                 <TabPanel p="0">
                   <TP title="Familjer">
-                    <ManageFamilies />
+                    <ManageFamilies families={families} />
                   </TP>
                 </TabPanel>
 
                 <TabPanel p="0">
                   <TP title="Bokningar">
-                    <ManageBookings />
+                    <ManageBookings bookings={bookings} />
                   </TP>
                 </TabPanel>
               </TabPanels>
