@@ -2,6 +2,7 @@ import { ddbClient } from "lib/DynamoDB";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
 import { invalidMethod } from "utils/api-utils";
+import crypto from "node:crypto";
 
 export default async function handler(
   req: NextApiRequest,
@@ -28,7 +29,7 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
-  const token = await getToken();
+  const token = await getToken({ req });
 
   if (token?.role !== "ADMIN") {
     return res
@@ -43,6 +44,7 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
     .put({
       TableName: "Families",
       Item: {
+        familyId: crypto.createHash("md5").update(name).digest("hex"),
         familyName: name,
       },
       ConditionExpression: `attribute_not_exists(familyName)`,
