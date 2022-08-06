@@ -1,6 +1,7 @@
 import { ddbClient } from "lib/DynamoDB";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { invalidMethod } from "utils/api-utils";
+import { getFamily } from "utils/db-utils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,34 +17,28 @@ export default async function handler(
 }
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const family = await ddbClient
-    .get({
-      TableName: "Families",
-      Key: {
-        familyId: `${req.query.id}`,
-      },
-      ProjectionExpression: "familyMembers, familyAdmins",
-    })
-    .then((res) => {
-      return res.Item;
-    });
+  const family = await getFamily(req.query.id as string);
+
+  if (!family.familyMembers || family.familyMembers?.length == 0) {
+    return res.status(200).json({ members: [] });
+  }
 
   await ddbClient
     .executeStatement({
       Statement: `
         SELECT id, name, email, image, role
         FROM "Users" 
-        WHERE id IN [${family?.familyMembers.map((id: string) => `'${id}'`)}]`,
+        WHERE id IN [${family?.familyMembers.map((id) => `'${id}'`)}]`,
     })
     .then((response) => {
-      res.status(200).json(
-        response.Items?.map((member) => {
+      return res.status(200).json({
+        members: response.Items?.map((member) => {
           return {
             ...member,
-            familyAdmin: family?.familyAdmins.includes(member.id),
+            familyAdmin: family?.familyAdmins?.includes(member.id) ?? [],
           };
-        })
-      );
+        }),
+      });
     })
     .catch((reason) => {
       const code = reason?.$metadata?.httpStatusCode;

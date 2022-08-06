@@ -1,7 +1,13 @@
 import { ddbClient } from "lib/DynamoDB";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
-import { invalidMethod } from "utils/api-utils";
+import { getToken, JWT } from "next-auth/jwt";
+import { UserAction } from "types";
+import {
+  genericErrorResponse,
+  invalidMethod,
+  isAllowedToEditFamily,
+} from "utils/api-utils";
+import { getFamily } from "utils/db-utils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,34 +15,24 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      return handleGet(req, res);
+      return res.status(200).json(await getFamily(req.query.id as string));
 
     case "PUT":
       return handlePut(req, res);
+
+    case "PATCH":
+      return handlePatch(req, res);
 
     default:
       return invalidMethod(req, res);
   }
 }
 
-const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { Item } = await ddbClient.get({
-    TableName: "Families",
-    Key: {
-      familyId: req.query.id,
-    },
-  });
-
-  return res.status(200).json(Item);
-};
-
 const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken({ req });
-  const { id } = req.query;
+  const familyId = req.query.id as string;
 
-  if (
-    !(token?.role === "ADMIN" || (token?.familyAdmin && token.familyId === id))
-  ) {
+  if (!isAllowedToEditFamily(token, familyId)) {
     return res.status(401).json({
       message:
         "Du måste vara admin eller familjeadmin för att redigera familjer.",
@@ -70,10 +66,10 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
     .put({
       TableName: "Families",
       Item: {
-        familyId: id,
+        familyId: familyId,
         familyName: familyName,
-        familyMembers: familyMembers,
-        familyAdmins: familyAdmins,
+        familyMembers: new Set(["", familyMembers]),
+        familyAdmins: new Set(["", familyAdmins]),
       },
     })
     .then(() =>
@@ -81,10 +77,59 @@ const handlePut = async (req: NextApiRequest, res: NextApiResponse) => {
         .status(201)
         .json({ message: `Familjen "${familyName}" har uppdaterades.` })
     )
-    .catch((response) => {
-      const code = response?.$metadata?.httpStatusCode;
-      let message = "Någonting gick fel";
-
-      return res.status(code).json({ message: message });
+    .catch((reason) => {
+      genericErrorResponse(reason, res);
     });
+};
+
+const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
+  const token = await getToken({ req });
+  const familyId = req.query.id as string;
+  const family = await getFamily(familyId);
+  const { userId, action }: { userId: string; action: UserAction } = JSON.parse(
+    req.body
+  );
+
+  if (!isAllowedToEditFamily(token, familyId)) {
+    return res.status(401).json({
+      message:
+        "Du måste vara admin eller familjeadmin för att redigera familjer.",
+    });
+  }
+
+  if (!family?.familyMembers?.includes(userId) && action !== "remove") {
+    return res.status(409).json({
+      message: "Användaren är inte en medlem i familjen.",
+    });
+  }
+
+  let updateExpression = "";
+
+  switch (action) {
+    case "promote":
+      updateExpression = `ADD familyAdmins :u`;
+      break;
+
+    case "demote":
+      updateExpression = `DELETE familyAdmins :u`;
+      break;
+
+    case "remove":
+      updateExpression = `DELETE familyAdmins :u, familyMembers :u`;
+      break;
+  }
+
+  return await ddbClient
+    .update({
+      TableName: "Families",
+      Key: {
+        familyId: familyId,
+      },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: {
+        ":u": new Set([userId]),
+      },
+    })
+    .then(() => res.status(200).json({ message: "Familjen har uppdaterats." }))
+    .catch((reason) => genericErrorResponse(reason, res));
 };

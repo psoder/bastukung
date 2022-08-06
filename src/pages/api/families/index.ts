@@ -1,8 +1,9 @@
 import { ddbClient } from "lib/DynamoDB";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
-import { invalidMethod } from "utils/api-utils";
 import crypto from "node:crypto";
+import { invalidMethod } from "utils/api-utils";
+import { getFamilies } from "utils/db-utils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -10,7 +11,7 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-      return handleGet(req, res);
+      return res.status(200).json(await getFamilies());
 
     case "POST":
       return handlePost(req, res);
@@ -19,14 +20,6 @@ export default async function handler(
       return invalidMethod(req, res);
   }
 }
-
-const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { Items } = await ddbClient.scan({
-    TableName: "Families",
-  });
-
-  return res.status(200).json(Items);
-};
 
 const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
   const token = await getToken({ req });

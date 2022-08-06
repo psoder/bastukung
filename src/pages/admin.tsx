@@ -1,7 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
 import AccessDenied from "components/AccessDenied";
 import Layout from "components/Layout";
-import { ddbClient } from "lib/DynamoDB";
 import { default as AdminPanel } from "modules/admin";
 import type {
   GetServerSideProps,
@@ -13,6 +12,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { createContext } from "react";
 import { Booking, Family, User } from "types";
+import { getBookings, getFamilies, getUsers } from "utils/db-utils";
 import { authOptions } from "./api/auth/[...nextauth]";
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -28,43 +28,14 @@ export const getServerSideProps: GetServerSideProps = async (
     return { props: {} };
   }
 
-  const getUsers = async () => {
-    const { Items } = await ddbClient.scan({
-      TableName: "Users",
-      ExpressionAttributeNames: {
-        "#t": "type",
-        "#n": "name",
-        "#r": "role",
-      },
-      ExpressionAttributeValues: {
-        ":t": "USER",
-      },
-      FilterExpression: "#t = :t",
-      ProjectionExpression: "image, email, #n, #r, id, familyId, familyAdmin",
-    });
-    return Items as User[];
-  };
-
-  const getFamilies = async () => {
-    const { Items } = await ddbClient.scan({
-      TableName: "Families",
-    });
-    return Items as Family[];
-  };
-
-  const getBookings = async () => {
-    const { Items } = await ddbClient.scan({
-      TableName: "Bookings",
-    });
-    return Items as Booking[];
-  };
-
   return {
-    props: {
-      users: await getUsers(),
-      families: await getFamilies(),
-      bookings: await getBookings(),
-    },
+    props: JSON.parse(
+      JSON.stringify({
+        users: await getUsers(),
+        families: await getFamilies(),
+        bookings: await getBookings(),
+      })
+    ),
   };
 };
 

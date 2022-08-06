@@ -2,6 +2,8 @@ export type Role = "USER" | "ADMIN";
 
 export type Email = `${string}@${string}.${string}`;
 
+export type UserAction = "remove" | "promote" | "demote";
+
 export type Booking = {
   familyId: string; // Partition key
   start: Date; // Sort key
@@ -16,14 +18,11 @@ export type User = {
   email: string;
   image?: string;
   role: Role;
-  emailVerified?: Date;
-  familyId: string;
-  familyAdmin: boolean;
-  dateCreated?: Date;
 };
 
 export type Family = {
+  familyId: string;
   familyName: string;
-  familyMembers: string[];
-  familyAdmins: string[];
+  familyMembers?:  string[];
+  familyAdmins?: string[];
 };
