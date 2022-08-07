@@ -4,7 +4,8 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  Select, useToast
+  Select,
+  useToast,
 } from "@chakra-ui/react";
 
 import { AdminContext } from "pages/admin";
@@ -21,6 +22,8 @@ const AddFamilyMember = ({ family }: { family: Family }) => {
   const handleAdd = async () => {
     const onSuccess = async (res: Response) => {
       let data = await res.json();
+      console.log(data.message);
+
       if (res.ok) {
         toast({
           title: "Familjemedlem tillagd.",
@@ -33,7 +36,7 @@ const AddFamilyMember = ({ family }: { family: Family }) => {
         toast({
           title: "Någoning gick fel.",
           status: "error",
-          description: `${data.details}`,
+          description: `${data.message}`,
           duration: 10000,
           isClosable: true,
         });

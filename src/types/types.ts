@@ -18,6 +18,8 @@ export type User = {
   email: string;
   image?: string;
   role: Role;
+  familyId?: string;
+  familyAdmin?: boolean;
 };
 
 export type Family = {

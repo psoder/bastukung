@@ -7,17 +7,6 @@ export const invalidMethod = (req: NextApiRequest, res: NextApiResponse) => {
     .json({ message: `'${req.method}' is not allowed for this resource` });
 };
 
-export const isAllowedToEditFamily = (
-  token: JWT | null,
-  familyId: string
-): boolean => {
-  return (
-    (token?.role === "ADMIN" ||
-      (token?.familyAdmin && token.familyId === familyId)) ??
-    false
-  );
-};
-
 export const genericErrorResponse = (response: any, res: NextApiResponse) => {
   const code = response?.$metadata?.httpStatusCode;
   let message = "Någonting gick fel";

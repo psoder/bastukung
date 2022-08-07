@@ -46,9 +46,26 @@ export const getUsers = async () => {
       ":t": "USER",
     },
     FilterExpression: "#t = :t",
-    ProjectionExpression: "image, email, #n, #r, id, familyId, familyAdmin",
+    ProjectionExpression: "id, #n, email, image, #r, familyId, familyAdmin",
   });
   return Items as User[];
+};
+
+export const getUser = async (userId: string) => {
+  const { Item } = await ddbClient.get({
+    TableName: "Users",
+    Key: {
+      pk: `USER#${userId}`,
+      sk: `USER#${userId}`,
+    },
+    ProjectionExpression: "id, #n, email, image, #r, familyId, familyAdmin",
+    ExpressionAttributeNames: {
+      "#n": "name",
+      "#r": "role",
+    },
+  });
+
+  return Item as User;
 };
 
 export const getBookings = async () => {
