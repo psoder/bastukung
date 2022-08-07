@@ -58,16 +58,12 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ user, token }) => {
       if (user) {
-        token.familyId = user.familyId as string;
-        token.familyAdmin = (user.familyAdmin as boolean) ?? false;
         token.role = (user.role as Role) ?? "USER";
       }
       return token;
     },
     session: async ({ session, token }) => {
       if (session?.user) {
-        session.user.familyId = token.familyId as string;
-        session.user.familyAdmin = token.familyAdmin as boolean;
         session.user.id = token.sub as string;
         session.user.role = token.role as Role;
       }

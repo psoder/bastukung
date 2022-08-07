@@ -10,8 +10,6 @@ declare module "next-auth" {
       /** The user's id. */
       id?: string;
       role?: Role;
-      familyId?: string;
-      familyAdmin: boolean;
     } & DefaultSession["user"];
   }
 }
@@ -21,7 +19,5 @@ declare module "next-auth/jwt" {
   interface JWT {
     /** OpenID ID Token */
     role?: Role;
-    familyId?: string;
-    familyAdmin: boolean;
   }
 }
