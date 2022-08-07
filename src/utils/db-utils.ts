@@ -9,8 +9,6 @@ export const getFamily = async (familyId: string): Promise<Family | null> => {
     },
   });
 
-  console.log(familyId);
-
   if (!Item) {
     return null;
   }

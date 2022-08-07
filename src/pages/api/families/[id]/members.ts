@@ -18,8 +18,8 @@ export default async function handler(
 
 const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   const family = await getFamily(req.query.id as string);
-
-  if (!family.familyMembers || family.familyMembers?.length == 0) {
+  
+  if (!family?.familyMembers || family.familyMembers?.length == 0) {
     return res.status(200).json({ members: [] });
   }
 

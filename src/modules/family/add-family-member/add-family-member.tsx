@@ -22,7 +22,6 @@ const AddFamilyMember = ({ family }: { family: Family }) => {
   const handleAdd = async () => {
     const onSuccess = async (res: Response) => {
       let data = await res.json();
-      console.log(data.message);
 
       if (res.ok) {
         toast({
@@ -44,8 +43,6 @@ const AddFamilyMember = ({ family }: { family: Family }) => {
     };
 
     const onFailure = async (reason: any) => {
-      console.error(reason);
-
       toast({
         title: "Någoning gick fel.",
         description: `${reason}`,

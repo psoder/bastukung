@@ -1,9 +1,34 @@
-import { Box, Divider, Flex, Heading, List, ListItem } from "@chakra-ui/react";
-import { Family } from "types";
+import {
+  Box,
+  Divider,
+  Flex,
+  Heading,
+  List,
+  ListItem,
+  Text,
+} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { Family, User } from "types";
+import UserRow from "../components/UserRow";
 
 const ViewFamily = ({ family }: { family: Family }) => {
+  const [members, setMembers] = useState<User[]>();
+
+  useEffect(() => {
+    fetch(`/api/families/${family.familyId}/members`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        setMembers(data.members);
+      })
+      .catch(console.error);
+  }, [family.familyId]);
+
   return (
-    <Flex flexDir="column" gap={5}>
+    <Flex flexDir="column" gap={5} maxW="60%">
       <Box>
         <Heading size="md">{family.familyName}</Heading>
         <Divider mb={2} mt={2} />
@@ -14,20 +39,22 @@ const ViewFamily = ({ family }: { family: Family }) => {
         <Heading size="md">Familjeadministratörer</Heading>
         <Divider mb={2} mt={2} />
         <List>
-          {family.familyAdmins?.map((id) => (
-            <ListItem key={id}>{id}</ListItem>
-          ))}
+          {members
+            ?.filter((user) => user.familyAdmin)
+            .map((user) => (
+              <UserRow key={user.id} user={user} />
+            ))}
         </List>
       </Box>
 
       <Box>
         <Heading size="md">Familjemedlemmar</Heading>
         <Divider mb={2} mt={2} />
-        <List>
-          {family.familyMembers?.map((id) => (
-            <ListItem key={id}>{id}</ListItem>
+        {members
+          ?.filter((user) => !user.familyAdmin)
+          .map((user) => (
+            <UserRow key={user.id} user={user} />
           ))}
-        </List>
       </Box>
     </Flex>
   );

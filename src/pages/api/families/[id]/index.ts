@@ -34,7 +34,7 @@ const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
   if (
     !(
       token?.role === "ADMIN" ||
-      (user.familyAdmin && user.familyId === familyId)
+      (user?.familyAdmin && user.familyId === familyId)
     )
   ) {
     return res.status(401).json({
@@ -52,11 +52,9 @@ const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
     });
   }
 
-  console.log(user.familyId);
-
-  if (user.familyId && (action == "add" || action == "addAdmin")) {
+  if (user?.familyId && (action == "add" || action == "addAdmin")) {
     return res.status(409).json({
-      message: "Användaren är redan med i en annan familj.",
+      message: "Användaren är redan med i en familj.",
     });
   }
 
@@ -98,7 +96,7 @@ const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
   return await ddbClient
     .update(params)
     .then((uco) => {
-      if (!["add", "addAdmin", "remove"].includes(action)) {
+      if (!["add", "addAdmin", "remove", "demote"].includes(action)) {
         return uco;
       }
 
@@ -129,6 +127,13 @@ const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
 
         case "remove":
           params.UpdateExpression = "REMOVE familyId, familyAdmin";
+          break;
+
+        case "demote":
+          params.UpdateExpression = "SET familyAdmin = :f";
+          params.ExpressionAttributeValues = {
+            ":f": false,
+          };
           break;
       }
 

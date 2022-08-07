@@ -14,6 +14,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import UserRow from "modules/family/components/UserRow";
 import { useState } from "react";
 import { Family, UserAction } from "types";
 import { User } from "../../types";
@@ -73,85 +74,85 @@ const FamilyMemberRow = ({
   };
 
   return (
-    <Flex justify="space-between" align="center">
-      <Text noOfLines={1}>{member.name}</Text>
-      <Flex gap={2} align="inherit">
-        <Text noOfLines={1}>{member.email}</Text>
+    <UserRow
+      user={member}
+      buttons={
+        <>
+          {member.familyAdmin ? (
+            <IconButton
+              aria-label="Gör till användare"
+              variant="solid"
+              size="xs"
+              color={"red"}
+              icon={<ArrowDownIcon />}
+              onClick={() => {
+                setAction("demote");
+                setModalInfo({
+                  title: "Gör familjeadmin till användare",
+                  text: `Är du säker på att du vill göra '${member.name}' till användare?`,
+                });
+                onOpen();
+              }}
+            />
+          ) : (
+            <IconButton
+              aria-label="Gör till admin"
+              variant="solid"
+              size="xs"
+              color={"green"}
+              icon={<ArrowUpIcon />}
+              onClick={() => {
+                setAction("promote");
+                setModalInfo({
+                  title: "Gör användare till familjeadmin",
+                  text: `Är du säker på att du vill göra '${member.name}' till familjeadmin?`,
+                });
+                onOpen();
+              }}
+            />
+          )}
 
-        {member.familyAdmin ? (
           <IconButton
-            aria-label="Gör till användare"
+            aria-label="Ta bort användare"
             variant="solid"
             size="xs"
             color={"red"}
-            icon={<ArrowDownIcon />}
+            icon={<CloseIcon />}
             onClick={() => {
-              setAction("demote");
+              setAction("remove");
               setModalInfo({
-                title: "Gör familjeadmin till användare",
-                text: `Är du säker på att du vill göra '${member.name}' till användare?`,
+                title: "Ta bort användare",
+                text: `Är du säker på att du vill ta bort '${member.name}' från din familj?`,
               });
               onOpen();
             }}
           />
-        ) : (
-          <IconButton
-            aria-label="Gör till admin"
-            variant="solid"
-            size="xs"
-            color={"green"}
-            icon={<ArrowUpIcon />}
-            onClick={() => {
-              setAction("promote");
-              setModalInfo({
-                title: "Gör användare till familjeadmin",
-                text: `Är du säker på att du vill göra '${member.name}' till familjeadmin?`,
-              });
-              onOpen();
-            }}
-          />
-        )}
 
-        <IconButton
-          aria-label="Ta bort användare"
-          variant="solid"
-          size="xs"
-          color={"red"}
-          icon={<CloseIcon />}
-          onClick={() => {
-            setAction("remove");
-            setModalInfo({
-              title: "Ta bort användare",
-              text: `Är du säker på att du vill ta bort '${member.name}' från din familj?`,
-            });
-            onOpen();
-          }}
-        />
-
-        <Modal onClose={onClose} isOpen={isOpen} isCentered>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>{modalInfo?.title}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>{modalInfo?.text}</ModalBody>
-            <ModalFooter gap={3}>
-              <Button onClick={onClose} color="red">
-                Avbryt
-              </Button>
-              <Button
-                onClick={async () => {
-                  action && (await patchUser(action));
-                  onClose();
-                }}
-                color="green"
-              >
-                Ja
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </Flex>
-    </Flex>
+          <Modal onClose={onClose} isOpen={isOpen} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>{modalInfo?.title}</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>{modalInfo?.text}</ModalBody>
+              <ModalFooter gap={3}>
+                <Button onClick={onClose} color="red">
+                  Avbryt
+                </Button>
+                <Button
+                  onClick={async () => {
+                    action && (await patchUser(action));
+                    onClose();
+                  }}
+                  color="green"
+                >
+                  Ja
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </>
+      }
+    />
   );
 };
 
