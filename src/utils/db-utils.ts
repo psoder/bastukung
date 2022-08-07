@@ -1,13 +1,19 @@
 import { ddbClient } from "lib/DynamoDB";
 import { Booking, Family, User } from "types";
 
-export const getFamily = async (familyId: string) => {
+export const getFamily = async (familyId: string): Promise<Family | null> => {
   const { Item } = await ddbClient.get({
     TableName: "Families",
     Key: {
       familyId: `${familyId}`,
     },
   });
+
+  console.log(familyId);
+
+  if (!Item) {
+    return null;
+  }
 
   const family = {
     ...Item,
@@ -51,7 +57,7 @@ export const getUsers = async () => {
   return Items as User[];
 };
 
-export const getUser = async (userId: string) => {
+export const getUser = async (userId: string): Promise<User | null> => {
   const { Item } = await ddbClient.get({
     TableName: "Users",
     Key: {
@@ -64,6 +70,10 @@ export const getUser = async (userId: string) => {
       "#r": "role",
     },
   });
+
+  if (!Item) {
+    return null;
+  }
 
   return Item as User;
 };
