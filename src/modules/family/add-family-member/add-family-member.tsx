@@ -4,10 +4,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  Heading,
-  Select,
-  useDisclosure,
-  useToast,
+  Select, useToast
 } from "@chakra-ui/react";
 
 import { AdminContext } from "pages/admin";
@@ -16,7 +13,6 @@ import { Family } from "types";
 import { addFamilyMember } from "utils";
 
 const AddFamilyMember = ({ family }: { family: Family }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const { users } = useContext(AdminContext);
   const [user, setUser] = useState(users[0]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -25,13 +21,23 @@ const AddFamilyMember = ({ family }: { family: Family }) => {
   const handleAdd = async () => {
     const onSuccess = async (res: Response) => {
       let data = await res.json();
-      toast({
-        title: "Familjemedlem tillagd.",
-        description: `${data.message}`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      if (res.ok) {
+        toast({
+          title: "Familjemedlem tillagd.",
+          description: `${data.message}`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Någoning gick fel.",
+          status: "error",
+          description: `${data.details}`,
+          duration: 10000,
+          isClosable: true,
+        });
+      }
     };
 
     const onFailure = async (reason: any) => {

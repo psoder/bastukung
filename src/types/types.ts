@@ -2,7 +2,7 @@ export type Role = "USER" | "ADMIN";
 
 export type Email = `${string}@${string}.${string}`;
 
-export type UserAction = "remove" | "promote" | "demote";
+export type UserAction = "remove" | "promote" | "demote" | "add" | "addAdmin";
 
 export type Booking = {
   familyId: string; // Partition key
@@ -23,6 +23,6 @@ export type User = {
 export type Family = {
   familyId: string;
   familyName: string;
-  familyMembers?:  string[];
+  familyMembers?: string[];
   familyAdmins?: string[];
 };

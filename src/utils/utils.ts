@@ -8,11 +8,10 @@ export const addFamilyMember = async (
   onFailure: (reason: any) => void = () => {}
 ) => {
   await fetch(`/api/families/${family.familyId}`, {
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify({
-      ...family,
-      familyMembers: [...(family.familyMembers ?? []), user.id],
-      familyAdmins: [...(family.familyAdmins ?? []), admin ? user.id : ""],
+      userId: user.id,
+      action: admin ? "addAdmin" : "add",
     }),
   })
     .then((res) => onSuccess(res))

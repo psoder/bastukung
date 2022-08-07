@@ -139,8 +139,9 @@ const FamilyMemberRow = ({
                 Avbryt
               </Button>
               <Button
-                onClick={() => {
-                  action && patchUser(action);
+                onClick={async () => {
+                  action && (await patchUser(action));
+                  onClose();
                 }}
                 color="green"
               >
