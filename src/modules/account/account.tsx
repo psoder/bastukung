@@ -11,15 +11,16 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import Card from "components/Card";
-import { useSession } from "next-auth/react";
+import ManageFamily from "modules/family/manage-family";
+import ViewFamily from "modules/family/view-family";
 import { ReactElement } from "react";
+import { useAccountContext } from "./account-context";
 import AccountInfo from "./account-info";
 import Bookings from "./bookings";
-import Family from "./family";
 
 const Account = () => {
-  const { data: session } = useSession();
-
+  const { user } = useAccountContext();
+  
   return (
     <Container maxW="8xl" display="flex" p="5%">
       <Tabs orientation="vertical" flex={1}>
@@ -46,7 +47,7 @@ const Account = () => {
                 </Tab>
                 <Tab justifyContent="left" textAlign="left">
                   <Heading as="h3" size="md" fontWeight="normal">
-                    Hantera Familj
+                    {user.familyAdmin ? "Hantera familj" : "Visa familj"}
                   </Heading>
                 </Tab>
                 <Tab justifyContent="left" textAlign="left">
@@ -103,6 +104,20 @@ const TP = ({
       {children}
     </>
   );
+};
+
+const Family = () => {
+  const { user, family } = useAccountContext();
+
+  if (!family) {
+    return <>Ingen familj :(</>;
+  }
+
+  if (user.familyAdmin) {
+    return <ManageFamily family={family} />;
+  } else {
+    return <ViewFamily family={family} />;
+  }
 };
 
 export default Account;

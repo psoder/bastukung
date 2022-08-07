@@ -1,18 +1,44 @@
-import {
-  DescribeTableCommand,
-  DynamoDBClient,
-  DynamoDBClientConfig,
-} from "@aws-sdk/client-dynamodb";
-import { Box, Flex } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import AccessDenied from "components/AccessDenied";
 import Layout from "components/Layout";
-import ddbClient from "lib/DynamoDB";
-import type { NextPage } from "next";
+import { default as AccountComponent } from "modules/account";
+import { AccountContextProvider } from "modules/account/account-context";
+import type {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  NextPage,
+} from "next";
+import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { default as AccountComponent } from "modules/account";
+import { getBookings, getFamily, getUser } from "utils/db-utils";
+import { authOptions } from "./api/auth/[...nextauth]";
 
-const Account: NextPage = () => {
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
+
+  const user = await getUser(session?.user.id as string);
+
+  if (!user) {
+    return { props: {} };
+  }
+
+  return {
+    props: {
+      user: user,
+      bookings: await getBookings(),
+      family: await getFamily(user?.familyId as string),
+    },
+  };
+};
+
+const Account: NextPage = ({ user, bookings, family }: any) => {
   const { status } = useSession();
 
   if (status !== "authenticated") {
@@ -33,37 +59,15 @@ const Account: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Layout>
-        <AccountComponent />
-      </Layout>
+      <AccountContextProvider
+        value={{ user: user, family: family, bookings: bookings }}
+      >
+        <Layout>
+          <AccountComponent />
+        </Layout>
+      </AccountContextProvider>
     </>
   );
 };
-
-export async function getServerSideProps() {
-  // const config: DynamoDBClientConfig = {
-  //   region: process.env.AWS_REGION,
-  //   credentials: {
-  //     accessKeyId: process.env.DB_ACCESS_KEY!,
-  //     secretAccessKey: process.env.DB_ACCESS_SECRET!,
-  //   },
-  // };
-
-  // let ddbc = new DynamoDBClient({
-  //   region: process.env.AWS_REGION,
-  //   credentials: {
-  //     accessKeyId: process.env.DB_ACCESS_KEY!,
-  //     secretAccessKey: process.env.DB_ACCESS_SECRET!,
-  //   },
-  // });
-
-  const cmd = new DescribeTableCommand({ TableName: "Users" });
-  const res = await ddbClient.send(cmd);
-  console.log(res);
-
-  return {
-    props: {},
-  };
-}
 
 export default Account;
