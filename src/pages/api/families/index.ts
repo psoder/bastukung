@@ -26,7 +26,7 @@ const handlePost = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (token?.role !== "ADMIN") {
     return res
-      .status(401)
+      .status(403)
       .json({ message: "Du måste vara admin för att skapa familjer." });
   }
 

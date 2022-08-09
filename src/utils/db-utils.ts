@@ -83,3 +83,14 @@ export const getBookings = async () => {
 
   return Items as Booking[];
 };
+
+export const getBooking = async (familyId: string, startTime: number) => {
+  const { Item } = await ddbClient.get({
+    TableName: "Bookings",
+    Key: {
+      familyId: familyId,
+      startTime: startTime,
+    },
+  });
+  return Item as Booking | undefined;
+};

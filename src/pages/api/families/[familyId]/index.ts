@@ -37,7 +37,7 @@ const handlePatch = async (req: NextApiRequest, res: NextApiResponse) => {
       (user?.familyAdmin && user.familyId === familyId)
     )
   ) {
-    return res.status(401).json({
+    return res.status(403).json({
       message:
         "Du måste vara admin eller familjeadmin för att redigera familjer.",
     });

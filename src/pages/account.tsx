@@ -11,6 +11,7 @@ import type {
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { Booking } from "types";
 import { getBookings, getFamily, getUser } from "utils/db-utils";
 import { authOptions } from "./api/auth/[...nextauth]";
 
@@ -60,7 +61,17 @@ const Account: NextPage = ({ user, bookings, family }: any) => {
       </Head>
 
       <AccountContextProvider
-        value={{ user: user, family: family, bookings: bookings }}
+        value={{
+          user: user,
+          family: family,
+          bookings: bookings.map((booking: Booking) => {
+            return {
+              ...booking,
+              startTime: new Date(booking.startTime),
+              endTime: new Date(booking.endTime),
+            };
+          }),
+        }}
       >
         <Layout>
           <AccountComponent />
