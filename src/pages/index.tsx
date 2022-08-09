@@ -1,7 +1,10 @@
-import { Box } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import Card from "components/Card";
 import Layout from "components/Layout";
+import BookingList from "modules/booking/bookings-list";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { bookings } from "utils/mock";
 
 const Home: NextPage = () => {
   return (
@@ -13,15 +16,15 @@ const Home: NextPage = () => {
       </Head>
 
       <Layout>
-        <Box
+        <Flex
           flex={1}
           as="main"
           bgImage="/images/background.jpg"
           bgPos="center"
           bgSize="cover"
-        >
-          Home content
-        </Box>
+          justify="center"
+          align="center"
+        ></Flex>
       </Layout>
     </>
   );

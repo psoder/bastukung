@@ -11,16 +11,16 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import Card from "components/Card";
+import ManageBookings from "modules/booking/manage-bookings";
 import ManageFamily from "modules/family/manage-family";
 import ViewFamily from "modules/family/view-family";
 import { ReactElement } from "react";
 import { useAccountContext } from "./account-context";
 import AccountInfo from "./account-info";
-import Bookings from "./bookings";
 
 const Account = () => {
   const { user } = useAccountContext();
-  
+
   return (
     <Container maxW="8xl" display="flex" p="5%">
       <Tabs orientation="vertical" flex={1}>
@@ -118,6 +118,15 @@ const Family = () => {
   } else {
     return <ViewFamily family={family} />;
   }
+};
+
+const Bookings = () => {
+  const { bookings } = useAccountContext();
+  return (
+    <>
+      <ManageBookings bookings={bookings} />
+    </>
+  );
 };
 
 export default Account;
