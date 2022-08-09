@@ -67,7 +67,17 @@ const Admin: NextPage = ({ users, families, bookings }: any) => {
       </Head>
 
       <AdminContext.Provider
-        value={{ users: users, families: families, bookings: bookings }}
+        value={{
+          users: users,
+          families: families,
+          bookings: bookings.map((booking: Booking) => {
+            return {
+              ...booking,
+              startTime: new Date(booking.startTime),
+              endTime: new Date(booking.endTime),
+            };
+          }),
+        }}
       >
         <Layout>
           <Box flex={1} display="flex" bgColor="red.100">

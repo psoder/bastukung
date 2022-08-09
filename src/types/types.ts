@@ -4,10 +4,12 @@ export type Email = `${string}@${string}.${string}`;
 
 export type UserAction = "remove" | "promote" | "demote" | "add" | "addAdmin";
 
+export type ApiResponse = { message: string; details?: any };
+
 export type Booking = {
   familyId: string; // Partition key
-  start: Date; // Sort key
-  end: Date;
+  startTime: Date; // Sort key
+  endTime: Date;
   bookedBy: string;
   comment?: string;
 };

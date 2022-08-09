@@ -11,13 +11,15 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import Card from "components/Card";
-import { ReactElement } from "react";
-import { Booking, Family, User } from "types";
-import ManageBookings from "./manage-bookings";
+import { ReactElement, useContext } from "react";
+import ManageBookings from "modules/booking/manage-bookings";
 import ManageFamilies from "./manage-families";
 import ManageUsers from "./manage-users";
+import { AdminContext } from "pages/admin";
 
 const Admin = () => {
+  const { bookings } = useContext(AdminContext);
+
   return (
     <Container maxW="8xl" display="flex" p="5%">
       <Tabs orientation="vertical" flex={1}>
@@ -73,7 +75,7 @@ const Admin = () => {
 
                 <TabPanel p="0">
                   <TP title="Bokningar">
-                    <ManageBookings />
+                    <ManageBookings bookings={bookings} />
                   </TP>
                 </TabPanel>
               </TabPanels>

@@ -1,37 +1,36 @@
 import {
-  Table,
   TableContainer,
-  Tbody,
-  Td,
-  Th,
+  Table,
   Thead,
   Tr,
+  Th,
+  Tbody,
+  Td,
 } from "@chakra-ui/react";
-import { AdminContext } from "pages/admin";
-import { useContext } from "react";
+import { format } from "date-fns";
 import { Booking } from "types";
-import { format } from "utils/date";
+import CreateBooking from "../create-booking";
 
-const ManageBookings = () => {
-  const { bookings } = useContext(AdminContext);
-
+const ManageBookings = ({ bookings }: { bookings: Booking[] }) => {
   return (
     <>
+      <CreateBooking />
+
       <TableContainer>
         <Table variant="simple">
           <Thead>
             <Tr>
+              <Th>Datum</Th>
+              <Th>Tid</Th>
               <Th>Familj</Th>
-              <Th>Start</Th>
-              <Th>Slut</Th>
               <Th>Bokad av</Th>
               <Th>Kommentar</Th>
             </Tr>
           </Thead>
 
           <Tbody>
-            {bookings.map((booking) => (
-              <BookingRow key={booking.start.getTime()} booking={booking} />
+            {bookings.sort().map((booking) => (
+              <BookingRow key={booking.startTime.getTime()} booking={booking} />
             ))}
           </Tbody>
         </Table>
@@ -43,9 +42,13 @@ const ManageBookings = () => {
 const BookingRow = ({ booking }: { booking: Booking }) => {
   return (
     <Tr>
+      <Td>{format(booking.startTime, "dd / MM / yyyy")}</Td>
+      <Td>
+        {format(booking.startTime, "HH':'mm")}
+        {" - "}
+        {format(booking.endTime, "HH':'mm")}
+      </Td>
       <Td>{booking.familyId}</Td>
-      <Td>{format(booking.start, "hh':'mm dd-MM-yy")}</Td>
-      <Td>{format(booking.end, "hh':'mm dd-MM-yy")}</Td>
       <Td>{booking.bookedBy ?? "-"}</Td>
       <Td>{booking.comment ?? "-"}</Td>
     </Tr>
