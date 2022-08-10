@@ -10,7 +10,7 @@ import { Role } from "types";
 
 const adapterConfig = (): DynamoDBClientConfig => {
   let config: DynamoDBClientConfig = {
-    region: process.env.AWS_REGION,
+    region: process.env.DYNAMODB_REGION,
     credentials: {
       accessKeyId: process.env.DB_ACCESS_KEY!,
       secretAccessKey: process.env.DB_ACCESS_SECRET!,

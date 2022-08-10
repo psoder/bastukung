@@ -4,7 +4,7 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 let ddbClient: DynamoDBDocument;
 
 const config: DynamoDBClientConfig = {
-  region: process.env.AWS_REGION,
+  region: process.env.DYNAMODB_REGION,
   credentials: {
     accessKeyId: process.env.DB_ACCESS_KEY!,
     secretAccessKey: process.env.DB_ACCESS_SECRET!,
