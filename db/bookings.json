@@ -1,0 +1,7 @@
+{
+    "TableName": "Bookings",
+    "BillingMode": "PAY_PER_REQUEST",
+    "AttributeDefinitions": [],
+    "KeySchema": [],
+    "GlobalSecondaryIndexes": []
+}

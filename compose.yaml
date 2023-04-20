@@ -1,33 +1,60 @@
 version: "3.8"
 services:
-  web:
-    build:
-      context: ./src
-      dockerfile: next.Dockerfile
-    networks:
-      - local-dynamodb
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./src:/src
-      - /src/node_modules
-      - /src/.next
+    # dynamo:
+    #     container_name: local-dynamodb
+    #     image: amazon/dynamodb-local
+    #     networks:
+    #         - local-dynamodb
+    #     ports:
+    #         - "8000:8000"
+    #     volumes:
+    #         - dynamodata:/home/dynamodblocal
+    #     working_dir: /home/dynamodblocal
+    #     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
 
-  dynamo:
-    container_name: local-dynamodb
-    image: amazon/dynamodb-local
-    networks:
-      - local-dynamodb
-    ports:
-      - "8000:8000"
-    volumes:
-      - dynamodata:/home/dynamodblocal
-    working_dir: /home/dynamodblocal
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
+    # create-table:
+    #     build:
+    #         context: ./db
+    #         dockerfile: create-table.Dockerfile
+    #     networks:
+    #         - local-dynamodb
+    #     depends_on:
+    #         - dynamo
+
+    localstack:
+        container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+        image: localstack/localstack
+        build:
+            context: ./db
+            dockerfile: create-tables.Dockerfile
+        ports:
+            - "127.0.0.1:4566:4566" # LocalStack Gateway
+            - "127.0.0.1:4510-4559:4510-4559" # external services port range
+        environment:
+            - DEBUG=${DEBUG-}
+            - DOCKER_HOST=unix:///var/run/docker.sock
+        volumes:
+            - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+            - ./create_bucket.sh:/docker-entrypoint-initaws.d/create_bucket.sh
+        networks:
+            - dynamodb-local
+
+    # create-tables:
+    #     build:
+    #         context: ./db
+    #         dockerfile: create-tables.Dockerfile
+    #     depends_on:
+    #         - localstack
+    #     networks:
+    #         - dynamodb-local
 
 networks:
-  local-dynamodb:
-    name: local-dynamodb
+    local-dynamodb:
+        name: local-dynamodb
+
+    dynamodb-local:
+        name: dynamodb-local
 
 volumes:
-  dynamodata: {}
+    dynamodata: {}
